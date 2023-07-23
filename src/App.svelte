@@ -14,6 +14,7 @@
     disabled = true
     loading = true
     error = null
+    data = null
 
     try {
         const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${search}`
