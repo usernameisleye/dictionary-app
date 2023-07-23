@@ -1,27 +1,32 @@
 <script>
-    export let head
     export let meaning
 
-    console.log(meaning, "hi");
+    const { partOfSpeech, definitions, synonyms } = meaning
 </script>
 
 <div class="block">
-    <h4>{head}</h4>
+    <h4>{partOfSpeech}</h4>
 
     <div class="content">
         <p>Meaning</p>
         <!-- svelte-ignore a11y-no-redundant-roles -->
         <ul role="list">
-            {#each meaning as d}
+            {#each definitions.slice(0, 4) as d}
                 <li>{d.definition}</li>
             {/each}
         </ul>
     </div>
-    <div class="syn">
-        <span>Synonyms</span>
-        <span class="res">aid</span>
-    </div>
-    <p class="example">"{meaning[0].example}"</p>
+
+    {#if synonyms.length > 0}
+        <div class="syn">
+            <span>Synonyms</span>
+            <span class="res">{synonyms.slice(0, 6)}</span>
+        </div>
+    {/if}
+
+    {#if definitions[0].example}  
+        <p class="example">"{definitions[0].example}"</p>
+    {/if}
 </div>
 
 

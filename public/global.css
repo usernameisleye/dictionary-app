@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap');
 
 :root{
-	--clr-error: #A42A12;
+	--clr-error: #FE0001;
 	--clr-accent: #46A758;
 	--clr-accent-dim: #46A75866;
 
@@ -76,6 +76,7 @@ body {
   font-family: var(--ff-primary);
   text-rendering: optimizeSpeed;
   background: var(--clr-bg-main);
+  color: var(--clr-text);
 }
 
 /* A elements that don't have a class get default styles */

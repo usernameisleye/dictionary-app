@@ -1,6 +1,18 @@
 <script>
+  import { onMount } from "svelte"
+
     let getTheme
     let theme
+    let userTheme = window.matchMedia("(prefers-color-scheme: dark)")
+
+    onMount(() => {
+        if(userTheme) {
+            theme = "dark"
+        }
+        else {
+            theme = "light"
+        }
+    })
 
     const toggle = () => {
         getTheme = document.documentElement.getAttribute("data-theme")
@@ -25,7 +37,6 @@
                     src="/static/sun.svg" 
                     alt="Sun icon" 
                 >
-
             {:else}
                 <img 
                     src="/static/moon.svg"

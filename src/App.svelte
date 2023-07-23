@@ -1,30 +1,44 @@
 <script>
-  import { get } from "svelte/store";
-  import Header from "./components/Header.svelte"
-  import Result from "./components/Result.svelte"
-  import { store } from "./store"
+    import Header from "./components/Header.svelte"
+    import Result from "./components/Result.svelte"
+    import ErrorBlock from "./components/ErrorBlock.svelte"
 
   let search = ""
+  let error = null
+  let data = null
+  let loading = false
   let disabled = false
 
   const getData = async () => {
     if(search === "") return
-
     disabled = true
-    const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${search}`
-    const r = await fetch(url)
-    const rjson = await r.json()
+    loading = true
+    error = null
 
-    store.set(rjson)
-    disabled = false
+    try {
+        const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${search}`
+        const r = await fetch(url)
+        const rjson = await r.json()
+        if (!r.ok) {
+            error = rjson
+            return
+        }
 
-    console.log($store);
-  }
-
+        data = rjson
+    }
+    catch(err) {
+        console.error(error.message)
+    }
+    finally {
+        disabled = false
+        loading = false
+    }
+}
 </script>
 
 <svelte:document on:keypress={e => {
-    if(e.key === "Enter") {
+    if(e.key === "Enter") 
+    {
         getData()
     }
 }} />
@@ -49,7 +63,20 @@
         <button {disabled} on:click={getData}>Search</button>
     </div>
 
-    <Result />
+    {#if loading}
+        <div class="loading">
+            <img 
+                src="/static/load.svg" 
+                alt="Loading..."
+            >
+        </div>
+    {:else if data}
+        <Result {data} />
+    {:else if error}
+        <ErrorBlock {error} />
+    {:else}
+        <h2 class="default">Search for a word🔎</h2>
+    {/if}
 </main>
 
 
@@ -75,7 +102,7 @@
         display: flex;
         padding: var(--size-300);
         justify-content: space-between;
-        border-radius: var(--size-300);
+        border-radius: var(--size-700);
         margin-block: var(--size-800) var(--size-600);
     }
 
@@ -102,7 +129,7 @@
     .search button {
         color: white;
         padding-inline: var(--size-700);
-        border-radius: var(--size-300);
+        border-radius: var(--size-600);
         background: var(--clr-accent);
     }
 
@@ -116,14 +143,30 @@
         cursor: not-allowed;
     }
 
+    .default {
+        font-size: var(--fs-600);
+        color: var(--clr-accent);
+        text-align: center;
+    }
+
+    .loading {
+        display: grid;
+        place-items: center;
+    }
+
+    .loading img {
+        width: var(--size-900);
+    }
+
     @media (max-width: 50em) {
         main {
             max-width: 100%;
             padding: var(--size-500);
+            margin-block: var(--size-600);
         }
 
         .search button {
-            padding-inline: var(--size-500);
+            padding-inline: var(--size-600);
         }
     }
 </style>

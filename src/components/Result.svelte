@@ -1,16 +1,26 @@
 <script>
   import Block from "./Block.svelte"
-  import { store } from "../store"
+
+  export let data
+  const { word, phonetics, origin, meanings, sourceUrls } = data[0]
+
+  const speak = () => {
+    let speech = new SpeechSynthesisUtterance(word)
+    speechSynthesis.speak(speech)
+  }
 </script>
 
-{#if $store}
+{#if data}
     <section class="result">
         <div class="head">
             <div>
-                <h2 class="word">{$store[0].word}</h2>
-                <p class="phonetics">{$store[0].phonetics[0].text}</p>
+                <h2 class="word">{word}</h2>
+                {#if phonetics[0].text} 
+                    <p class="phonetics">{phonetics[0].text}</p>
+                {/if}
             </div>
-            <button aria-label="play-button" class="play">
+
+            <button aria-label="play-button" class="play" on:click={speak}>
                 <svg 
                     xmlns="http://www.w3.org/2000/svg" 
                     width="0.75em" 
@@ -25,17 +35,21 @@
             </button>
         </div>
 
-        {#each $store[0].meanings as meaning}
-            <Block 
-                head={meaning.partOfSpeech} 
-                meaning={meaning.definitions}
-            />
+        {#each meanings as meaning}
+            <Block {meaning} />
         {/each}
+
+        {#if origin}
+            <div class="origin">
+                <small>Origin</small>
+                <small class="content">{origin}</small>
+            </div>
+        {/if}
 
         <div class="link">
             <small>Source</small>
             <div class="target">
-                <a href={$store[0].sourceUrls} target="_blank">{$store[0].sourceUrls}</a>
+                <a href={sourceUrls} target="_blank">{sourceUrls}</a>
                 <img 
                     src="/static/link.svg"
                     alt="Link icon"
@@ -50,7 +64,6 @@
         display: grid;
         grid-template-columns: repeat(1, minmax(0, 1fr));
         gap: var(--size-500);
-        color: var(--clr-text);
     }
 
     /* Head */
@@ -90,13 +103,8 @@
         fill: white;
     }
 
-    .example {
-        font-family: monospace;
-        font-size: var(--fs-500);
-        color: var(--clr-bg-sec);
-    }
-
-    .link {
+    .link, 
+    .origin {
         display: flex;
         flex-wrap: wrap;
         gap: var(--size-300);
@@ -104,11 +112,15 @@
         font-size: var(--fs-400);
         color: var(--clr-bg-sec);
         padding-top: var(--size-500);
+    }
+
+    .link {
         text-decoration: underline;
         border-top: 1px solid var(--clr-border-line);
     }
 
-    .link .target a {
+    .link .target a,
+    .origin .content {
         color: var(--clr-text);
     }
 
